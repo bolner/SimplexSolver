@@ -1,5 +1,22 @@
-#include <stdio.h>
-#include <stdarg.h>
+/*
+Copyright 2012-2018 Tamas Bolner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+#include <cinttypes>
+#include <iostream>
+#include <cstdarg>
 #include "exception.h"
 
 /**
@@ -10,14 +27,14 @@
  * @param ... Variable argument list.
  * @returns FException
  */
-FException::FException(char *error_msg, ...) {
-	va_list arg_list;
+FException::FException(const char *error_msg, ...) {
+    va_list arg_list;
 
-	va_start(arg_list, error_msg);
-	vsprintf_s(this->error_msg, (size_t)FE_MESSAGE_BUFFER_SIZE, error_msg, arg_list);
-	va_end(arg_list);
+    va_start(arg_list, error_msg);
+    vsnprintf(this->error_msg, (size_t)FE_MESSAGE_BUFFER_SIZE, error_msg, arg_list);
+    va_end(arg_list);
 
-	this->error_code = 0;
+    this->error_code = 0;
 }
 
 /**
@@ -29,30 +46,30 @@ FException::FException(char *error_msg, ...) {
  * @param ... Variable argument list.
  * @returns FException
  */
-FException::FException(unsigned __int64 error_code, char *error_msg, ...) {
-	va_list arg_list;
+FException::FException(int64_t error_code, const char *error_msg, ...) {
+    va_list arg_list;
 
-	va_start(arg_list, error_msg);
-	vsprintf_s(this->error_msg, (size_t)FE_MESSAGE_BUFFER_SIZE, error_msg, arg_list);
-	va_end(arg_list);
+    va_start(arg_list, error_msg);
+    vsnprintf(this->error_msg, (size_t)FE_MESSAGE_BUFFER_SIZE, error_msg, arg_list);
+    va_end(arg_list);
 
-	this->error_code = error_code;
+    this->error_code = error_code;
 }
 
 /**
  * Prints out the error message text to the console.
  */
-void FException::Print() {
-	printf(this->error_msg);
+void FException::Print() const {
+    std::cout << this->error_msg;
 }
 
 /**
  * Returns the error code if it's set. Otherwise returns 0.
  * 
- * @returns unsigned __int64
+ * @returns int64_t
  */
-unsigned __int64 FException::getErrorCode() {
-	return this->error_code;
+int64_t FException::getErrorCode() const {
+    return this->error_code;
 }
 
 /**
@@ -60,6 +77,6 @@ unsigned __int64 FException::getErrorCode() {
  * 
  * @returns char*
  */
-char* FException::getMessage() {
-	return this->error_msg;
+const char* FException::getMessage() const {
+    return this->error_msg;
 }
